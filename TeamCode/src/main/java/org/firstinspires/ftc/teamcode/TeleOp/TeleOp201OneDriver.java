@@ -16,7 +16,7 @@ class TeleOp201OneDriverLogic extends Logic_Base {
     double lastpower = 0.6;
 
     int low = 100;
-    int mid = 650;
+    int mid = 300;
     int top = 1133;
 
     public void execute_non_driver_controlled() {
@@ -39,7 +39,7 @@ class TeleOp201OneDriverLogic extends Logic_Base {
         }
 
         if (buttons[keys.indexOf("driver right_bumper")]) {
-            target_positions[0] = low;
+            //target_positions[0] = low;
         } else if (axes[keys.indexOf("driver left_trigger") - 20] > 0.1) {
             target_positions[0] = top;
         } else if (buttons[keys.indexOf("driver left_bumper")]) {
@@ -75,7 +75,7 @@ class TeleOp201OneDriverLogic extends Logic_Base {
         // Arm
         new_keybind("Left", "driver dpad_up", "default", "normal", 1.0);
 
-        new_keybind("Left", "driver dpad_down", "default", "normal", 0.05);
+        new_keybind("Left", "driver dpad_down", "default", "normal", 0.01);
 
         // V4B
         new_keybind("Virtual", "driver y", "default", "normal", -1.0);

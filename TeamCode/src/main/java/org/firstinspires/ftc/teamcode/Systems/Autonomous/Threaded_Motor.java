@@ -6,7 +6,7 @@ import org.firstinspires.ftc.teamcode.Systems.RobotHardware;
 
 public class Threaded_Motor extends Thread {
 
-    DcMotor motor;
+    public DcMotor motor;
     double min_power;
     double max_power;
     double p;

@@ -3,8 +3,17 @@ package org.firstinspires.ftc.teamcode.Systems;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.robotcore.external.hardware.camera.CameraManager;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.Systems.RoadRunner.StandardTrackingWheelLocalizer;
 import org.firstinspires.ftc.teamcode.Robot;
+import org.opencv.core.Mat;
+import org.opencv.objdetect.QRCodeDetector;
+import org.openftc.easyopencv.OpenCvCamera;
+import org.openftc.easyopencv.OpenCvCameraFactory;
+import org.openftc.easyopencv.OpenCvCameraRotation;
+import org.openftc.easyopencv.OpenCvPipeline;
+import org.openftc.easyopencv.OpenCvWebcam;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +43,8 @@ public class Logic_Base implements Robot {
     public double target_y = 0;
     public double target_angle = 0;
 
+    public double multiplier = 1;
+
     public double zero_angle = 0;
 
     public double current_error;
@@ -41,6 +52,10 @@ public class Logic_Base implements Robot {
 
     public long current_time;
     public long previous_time;
+
+    OpenCvWebcam webcam;
+
+    CameraManager cameraManager =null;
 
     public Logic_Base(RobotHardware r) {
         robot = r;
@@ -132,6 +147,10 @@ public class Logic_Base implements Robot {
     }
 
     public void update_robot() {
+        multiplier = 1;
+        if (buttons[keys.indexOf("driver right_bumper")]) {
+            multiplier = 0.5;
+        }
         for (Map.Entry<String, ArrayList<Object>> element : keybinds.entrySet()) { //for every element in keybinds
 
             ArrayList<Object> object_keys = element.getValue(); //object_keys = what the motor maps to
@@ -230,7 +249,7 @@ public class Logic_Base implements Robot {
                                         );
                                     }
 
-                                    calculated_power = Math.max(min_power[specific_list_index], Math.min(max_power[specific_list_index], calculated_power));
+                                    calculated_power = Math.max(min_power[specific_list_index], Math.min(max_power[specific_list_index], multiplier * calculated_power));
                                     if ((robot.dc_motor_list[specific_list_index].getCurrentPosition() > motor_max_positions[specific_list_index]) && (calculated_power > 0)) {
                                         calculated_power = Math.max(min_power[specific_list_index], (motor_max_positions[specific_list_index] - robot.dc_motor_list[specific_list_index].getCurrentPosition()) * p_weights[specific_list_index]);
                                     } else if (robot.dc_motor_list[specific_list_index].getCurrentPosition() < motor_min_positions[specific_list_index] && (calculated_power < 0)) {
@@ -707,4 +726,5 @@ public class Logic_Base implements Robot {
         }
         return false;
     }
+
 }
