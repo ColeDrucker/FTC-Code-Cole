@@ -56,7 +56,7 @@ class TeleOp201OneDriverLogic extends Logic_Base {
     //Initialization
 
     public void init() {
-        setZeroAngle(0);
+        setZeroAngle(-90);
         rightDCM = robot.map.get(DcMotor.class, "Right");
         rightDCM.setDirection(DcMotor.Direction.REVERSE);
         claw = robot.map.get(Servo.class, "Scissor");

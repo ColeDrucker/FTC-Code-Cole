@@ -53,6 +53,8 @@ public class Logic_Base implements Robot {
     public long current_time;
     public long previous_time;
 
+    public double previous_tgrt;
+
     OpenCvWebcam webcam;
 
     CameraManager cameraManager =null;
@@ -77,6 +79,7 @@ public class Logic_Base implements Robot {
         if (((locked_motion) || (locked_rotation)) && !((useRoadRunner) || (usePID))) {
             throw new IllegalArgumentException("You can't use locked motion or rotion without a PID method");
         }
+        previous_tgrt = System.nanoTime();
     }
 
     public void execute_controllers(Gamepad gamepad1, Gamepad gamepad2) {
@@ -395,13 +398,18 @@ public class Logic_Base implements Robot {
         double turning_factor = 0;
 
         if (right_stick_magnitude != 0) {
+            previous_tgrt = System.nanoTime() / 1000000000.0;
             if (locked_rotation) {
                 target_angle = right_stick_angle;
             } else { //if we're driving normally
                 target_angle = current_angle;
                 turning_factor = gamepad.right_stick_x;
             }
-        } //target angle remains constant if we aren't turning manually
+        } else { //target angle remains constant if we aren't turning manually
+            if (System.nanoTime() / 1000000000.0 - previous_tgrt < 0.5) {
+                target_angle = current_angle;
+            }
+        }
 
         drive(turning_factor, distance_factor, offset, speedFactor);
     }
@@ -431,7 +439,10 @@ public class Logic_Base implements Robot {
         previous_error = current_error;
         previous_time = current_time;
 
-        return p_weight * p + d_weight * d;
+        double k = p_weight * p + d_weight * d;
+        if (Math.abs(k) < 0.05) k = 0;
+
+        return Math.max(Math.min(k, max_pid_turning), 0 - max_pid_turning);
     }
 
     public double modifiedAngle(double radians) {

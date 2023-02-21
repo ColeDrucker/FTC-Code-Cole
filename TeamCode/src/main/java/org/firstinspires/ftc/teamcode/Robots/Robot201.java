@@ -50,12 +50,13 @@ public interface Robot201 {
     double max_driving_power = 0.6;
 
     boolean locked_motion = false; //MAKE THESE TRUE SOON PLS :)
-    boolean locked_rotation = false;
+    boolean locked_rotation = false; // make this false tomorrow COLEEEEEE
 
     //PID
     boolean usePID = false;
-    double p_weight = 0; // 0.025
-    double d_weight = 0; // 0.085
+    double p_weight = 2.5; // in radians --> max power around 10 degrees
+    double max_pid_turning = 0; // set this equal to 0 tomorrow COLEEEEEE
+    double d_weight = 0.085; // 0.085
 
     AxesOrder axesOrder = AxesOrder.ZYX;
     boolean invertIMU = false;
