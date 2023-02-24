@@ -15,8 +15,7 @@ class Auton extends Thread {
 
     RobotHardware rh;
     StandardTrackingWheelLocalizer stwl;
-    Tensorflow tf; 
-
+    Tensorflow tf;
     Auton_Position robot;
     Threaded_Motor motor1;
     Threaded_Servo servo1;

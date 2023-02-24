@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
 import org.firstinspires.ftc.teamcode.Logic.AutonomousLogic.AprilTag;
+import org.firstinspires.ftc.teamcode.Logic.AutonomousLogic.DriveDirection;
 import org.firstinspires.ftc.teamcode.Systems.Autonomous.Threaded_Motor;
 import org.firstinspires.ftc.teamcode.Systems.Logic_Base;
 import org.firstinspires.ftc.teamcode.Systems.RobotHardware;
@@ -14,43 +15,54 @@ public class Auton201 extends LinearOpMode {
 
     RobotHardware r = new RobotHardware();
     AprilTag apriltag = new AprilTag();
+    Auton201Logic logic = new Auton201Logic();
 
+    // distance from the camera lens to the back of your robot
+    public final double camera_from_back = 1.5;
+    // how long the robit is
+    public final double robot_length = 17.5;
+
+    public final double robot_width = 10;
+
+    // starts on the bottom left corner at all times
     @Override
     public void runOpMode() throws InterruptedException {
         r.init(hardwareMap, telemetry);
         apriltag.init(hardwareMap, telemetry);
+        logic.init(hardwareMap, telemetry);
 
         apriltag.startScanning();
 
         waitForStart();
-
-
-        sleep(3000);
+        apriltag.gameStarted();
+        // center in square
+        logic.driveInches(12 - robot_length / 2, DriveDirection.BACKWARD);
+        sleep(500);
+        logic.driveInches(camera_from_back, DriveDirection.FORWARD);
+        sleep(6000);
+        // finish scanning
 
         apriltag.stopScanning();
         int id = apriltag.getMostDetected();
+        logic.driveInches(camera_from_back, DriveDirection.BACKWARD);
 
         telemetry.addData("april tag: ", id);
         telemetry.update();
+        sleep(500);
 
-        if (id == 1) {
-            strafe(0.455);
-            sleep(1360);
-            forward(0.455);
-            sleep(100);
-            setSpeed(0);
+        // center of 3rd square
+        logic.driveInches(12 - robot_width / 2 + 48, DriveDirection.RIGHT);
 
-        } else if (id == 2) {
-            strafe(0.455);
-            sleep(1360);
-           setSpeed(0);
-
-        } else {
-
+        switch (id) {
+            case 1:
+                logic.driveInches(24, DriveDirection.FORWARD);
+                break;
+            case 2:
+                break;
+            case 3:
+                logic.driveInches(24, DriveDirection.BACKWARD);
+                break;
         }
-        sleep(1000);
-        setSpeed(0);
-
     }
 
 

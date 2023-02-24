@@ -20,7 +20,7 @@ public interface Robot201 {
     //Robot Hardware
 
     ArrayList<String> dc_motor_names = new ArrayList<>(Arrays.asList("Left"));
-    double[] max_power = {1.0};
+    double[] max_power = {.9};
     double[] min_power = {-0.1};
     double[] motor_max_positions = {Double.POSITIVE_INFINITY};
     double[] motor_min_positions = {Double.NEGATIVE_INFINITY};

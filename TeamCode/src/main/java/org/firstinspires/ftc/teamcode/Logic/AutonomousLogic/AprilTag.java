@@ -25,9 +25,9 @@ import java.util.ArrayList;
 
 public class AprilTag extends Thread {
     public int tag1count, tag2count, tag3count;
-
     private final int tag1id = 17, tag2id = 18, tag3id = 19;
 
+    private boolean started = false;
 
     private static boolean shouldBeRunning = false;
 
@@ -61,7 +61,7 @@ public class AprilTag extends Thread {
         camera.openCameraDeviceAsync(new OpenCvCamera.AsyncCameraOpenListener() {
             @Override
             public void onOpened() {
-                camera.startStreaming(800,448, OpenCvCameraRotation.UPRIGHT);
+                camera.startStreaming(800,448, OpenCvCameraRotation.SIDEWAYS_LEFT);
             }
 
             @Override
@@ -79,22 +79,28 @@ public class AprilTag extends Thread {
         this.start();
     }
 
+    public void gameStarted() {
+        started = true;
+    }
+
     public void run() {
         while (shouldBeRunning) {
             ArrayList<AprilTagDetection> currentDetections = aprilTagDetectionPipeline.getLatestDetections();
 
             ArrayList<Integer> ids = new ArrayList<>();
 
-            if(currentDetections.size() != 0) {
-                for(AprilTagDetection tag : currentDetections) {
-                    if (tag.id == tag1id) tag1count++;
-                    if (tag.id == tag2id) tag2count++;
-                    if (tag.id == tag3id) tag3count++;
-                    ids.add(tag.id);
+            if (started) {
+                if (currentDetections.size() != 0) {
+                    for (AprilTagDetection tag : currentDetections) {
+
+                        if (tag.id == tag1id) tag1count++;
+                        if (tag.id == tag2id) tag2count++;
+                        if (tag.id == tag3id) tag3count++;
+                        ids.add(tag.id);
+                    }
                 }
             }
 
-            /*
             telem.addData("length", currentDetections.size());
             telem.addData("ids", ids.toString());
             telem.addData("tag1 detections", tag1count);
@@ -102,7 +108,7 @@ public class AprilTag extends Thread {
             telem.addData("tag3 detections", tag3count);
             telem.addData("runs", aprilTagDetectionPipeline.runs);
             telem.update();
-            */
+
         }
     }
 
@@ -119,7 +125,7 @@ public class AprilTag extends Thread {
         else if (tag2count > tag1count && tag2count > tag3count) return 2;
         else if (tag3count > tag1count && tag3count > tag2count) return 3;
 
-        return 0;
+        return 1;
     }
 
 }
@@ -216,10 +222,13 @@ class AprilTagDetectionPipeline extends OpenCvPipeline {
         // OpenCV because I haven't yet figured out how to re-use AprilTag's pose in OpenCV.
         for(AprilTagDetection detection : detections)
         {
+            telem.addLine("We have a detection: " + detection.id);
+
             Pose pose = poseFromTrapezoid(detection.corners, cameraMatrix, tagsizeX, tagsizeY);
             drawAxisMarker(input, tagsizeY/2.0, 6, pose.rvec, pose.tvec, cameraMatrix);
             draw3dCubeMarker(input, tagsizeX, tagsizeX, tagsizeY, 5, pose.rvec, pose.tvec, cameraMatrix);
         }
+        telem.update();
 
         return input;
     }

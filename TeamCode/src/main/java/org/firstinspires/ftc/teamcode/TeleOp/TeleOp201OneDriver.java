@@ -73,9 +73,9 @@ class TeleOp201OneDriverLogic extends Logic_Base {
     public void set_keybinds() {
 
         // Arm
-        new_keybind("Left", "driver dpad_up", "default", "normal", 1.0);
+        new_keybind("Left", "driver dpad_up", "default", "normal", 0.9);
 
-        new_keybind("Left", "driver dpad_down", "default", "normal", 0.01);
+        new_keybind("Left", "driver dpad_down", "default", "normal", -0.05);
 
         // V4B
         new_keybind("Virtual", "driver y", "default", "normal", -1.0);
